@@ -30,7 +30,17 @@ export async function getSession():
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret);
-    return { userId: payload.userId as number };
+    const userId = payload.userId;
+
+    if (
+      typeof userId !== "number" ||
+      !Number.isSafeInteger(userId) ||
+      userId <= 0
+    ) {
+      return null;
+    }
+
+    return { userId };
   } catch {
     return null; // token invalide ou expiré
   }
